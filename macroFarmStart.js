@@ -3,18 +3,34 @@ export async function main(ns) {
     // Read the list of servers from all-list.txt
 
     async function jumpstart(server) {
-        if (ns.fileExists('payday.js', server)) {
-            ns.scriptKill('payday.js', server);
-            ns.exec('payday.js', server);
+        const paydayScript = 'payday.js';
+        const masterFarmScript = 'masterFarm.js';
+
+        if (ns.fileExists(paydayScript, server)) {
+            ns.scriptKill(paydayScript, server);
+
+            // Calculate maximum number of threads for payday.js
+            let maxRam = ns.getServerMaxRam(server);
+            let usedRam = ns.getServerUsedRam(server);
+            let freeRam = maxRam - usedRam;
+            let paydayRam = ns.getScriptRam(paydayScript);
+            let maxThreads = Math.floor(freeRam / paydayRam);
+
+            // Execute with max threads, fallback to 1 thread if not enough RAM
+            if (maxThreads > 0) {
+                ns.exec(paydayScript, server, maxThreads);
+            } else {
+                ns.print(`Not enough free RAM to run ${paydayScript} on ${server}`);
+            }
         } else {
-            ns.print(`payday.js not found on ${server}`);
+            ns.print(`${paydayScript} not found on ${server}`);
         }
 
-        if (ns.fileExists('masterFarm.js', server)) {
-            ns.scriptKill('masterFarm.js', server);
-            ns.exec('masterFarm.js', server);
+        if (ns.fileExists(masterFarmScript, server)) {
+            ns.scriptKill(masterFarmScript, server);
+            ns.exec(masterFarmScript, server);
         } else {
-            ns.print(`masterFarm.js not found on ${server}`);
+            ns.print(`${masterFarmScript} not found on ${server}`);
         }
     }
 
