@@ -1,9 +1,11 @@
-combined-list.txt , distribution-list.txt , myOwnServers.txt , all-list.txt :
+combined-list.txt , distribution-list.txt , myOwnServers.txt , all-list.txt ,
+stock-list.txt , stock-record.txt :
 
 "combined-list.txt" : Typically, there are names of servers that have
 money inside them on this list, so that they can be used for various 
 grow-weaken-hack processes. For this reason, moneyless servers won't be
-on this list.
+on this list. Also, the servers who have entries in Stock Market won't be
+on this list either.
 
 "distribution-list.txt" : Typically, there are names of servers that have
 RAM inside them on this list, so that they can be used for their ability to
@@ -20,6 +22,15 @@ So, this list needs to be manually reset after each start of the run.
 fact if they have money or RAM in them or not. Except it won't have the names of 
 my own bought servers. This was made so, that because some processes can be used 
 on all servers regardless of the fact if they don't have money or RAM.
+
+"stock-list.txt" : This will have the names of all servers that have an entry in
+the stock market. Growth and hack affect the stock market prices of the servers,
+so it's better to keep them in a separate list for stock market price manipulation.
+You can first empty the banks of these servers and buy their shares, then grow them
+back to the max, and sell the shares, then siphon their bank again.
+
+"stock-record.txt" : This will have the records of various attributes of the
+stock market entries based on date and available money.
 
 ======================================================================================
 
@@ -63,7 +74,9 @@ macroFarmStart.js :
 This script takes a list of server names from "all-list.txt" and "myOwnServers.txt",
 and sequentially starts the "masterFarm.js" or "payday.js" in every one of them 
 if the corresponding file exists in the given server, while killing the previous 
-script if it was already running. Runs only once.
+script if it was already running. If it's going to run "payday.js", it calculates the
+maximum number of threads "payday.js" can run on that server, and runs it with the 
+specified number of threads for that server. Runs only once.
 
 =======================================================================================
 
@@ -82,7 +95,25 @@ This can be used for automatically restarting the "payday.js", "distFarm.js",
 scripts for any reason. Also checks and terminates if the same scripts were already 
 running before. Runs only once.
 
-======================================================================================
+=======================================================================================
+
+stockSiphon.js , stockNurture.js , biggerSiphon.js , biggerNurture.js:
+
+Both scripts take a list of server names from the "stock-list.txt", and 
+puts them inside an array of data structures that hold these servers' attributes.
+
+"stockNurture.js" does grow and weaken operations on these servers until their money
+are maximized and security are minimized.
+
+"stockSiphon.js" does hack and weaken operations on these servers until their server 
+money are minimized and security are minimized.
+
+Both run on a limited loop.
+
+"biggerSiphon.js" and "biggerNurture.js" calls their corresponding scripts with more 
+numbers of threads. These run once.
+
+=======================================================================================
 
 singularityStart.js :
 
