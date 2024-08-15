@@ -15,7 +15,7 @@ export async function main(ns) {
         }
 
         shouldHack() {
-            return this.currentMoney >= this.maxMoney * 0.1;
+            return this.currentMoney >= this.maxMoney*0.0001;
         }
 
         shouldWeaken() {
@@ -23,19 +23,19 @@ export async function main(ns) {
         }
     }
 
-    let serverList = [];
+    const serverList = [];
 
     // Read the server names from 'stock-list.txt'
-    let data = ns.read('stock-list.txt');
-    let servers = data.split('\n').map(s => s.trim()).filter(s => s !== '');
+    const data = ns.read('stock-list.txt');
+    const servers = data.split('\n').map(s => s.trim()).filter(s => s !== '');
 
     // Initialize server data structures
-    for (let server of servers) {
+    for (const server of servers) {
         if (ns.hasRootAccess(server)) {
-            let maxMoney = ns.getServerMaxMoney(server);
-            let currentMoney = ns.getServerMoneyAvailable(server);
-            let minSecurity = ns.getServerMinSecurityLevel(server);
-            let currentSecurity = ns.getServerSecurityLevel(server);
+            const maxMoney = ns.getServerMaxMoney(server);
+            const currentMoney = ns.getServerMoneyAvailable(server);
+            const minSecurity = ns.getServerMinSecurityLevel(server);
+            const currentSecurity = ns.getServerSecurityLevel(server);
             serverList.push(new ServerData(server, maxMoney, currentMoney, minSecurity, currentSecurity));
         } else {
             ns.print(`No root access to ${server}, skipping...`);
@@ -44,19 +44,26 @@ export async function main(ns) {
 
     // Main loop
     while (serverList.some(server => server.shouldHack() || server.shouldWeaken())) {
-        for (let serverData of serverList) {
+        for (const serverData of serverList) {
             serverData.updateCurrentState(ns);
 
-            if (serverData.shouldWeaken()) {
-                await ns.weaken(serverData.name, { stock: true });
-                await ns.sleep(2000);
+            // Check if there's enough free RAM to run the hack or weaken scripts
+            const freeRAM = ns.getServerMaxRam('home') - ns.getServerUsedRam('home')-100;
+            //const hackRAMCost = ns.getScriptRam('stockHack.js');
+            //const weakenRAMCost = ns.getScriptRam('stockWeaken.js');
+
+            if (serverData.shouldWeaken() && freeRAM >0) {
+                ns.run("stockWeaken.js", 100, serverData.name);
+                await ns.sleep(1);
             }
 
-            if (serverData.shouldHack()) {
-                await ns.hack(serverData.name, { stock: true });
-                await ns.sleep(2000);
+            if (serverData.shouldHack() && freeRAM >0) {
+                ns.run("stockHack.js", 100, serverData.name);
+                await ns.sleep(1);
             }
         }
+
+        await ns.sleep(100); // Pause before the next loop iteration to avoid overwhelming the system
     }
 
     ns.print("Exiting, no servers meet the hacking or weakening criteria.");
