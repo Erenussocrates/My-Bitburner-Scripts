@@ -1,16 +1,9 @@
-combined-list.txt , distribution-list.txt , myOwnServers.txt , all-list.txt ,
-stock-list.txt , stock-record.txt :
+all-list.txt , myOwnServers.txt , stock-list.txt:
 
-"combined-list.txt" : Typically, there are names of servers that have
-money inside them on this list, so that they can be used for various 
-grow-weaken-hack processes. For this reason, moneyless servers won't be
-on this list. Also, the servers who have entries in Stock Market won't be
-on this list either.
-
-"distribution-list.txt" : Typically, there are names of servers that have
-RAM inside them on this list, so that they can be used for their ability to
-process and run scripts. For this reason, RAMless servers won't be on this
-list.
+"all-list.txt" : This will have the names of all servers, regardless of the 
+fact if they have money or RAM in them or not. Except it won't have the names of 
+my own bought servers. This was made so, that because some processes can be used 
+on all servers regardless of the fact if they don't have money or RAM.
 
 "myOwnServers.txt" : Typically, there are names of servers that I have
 bought on my own on this list. These servers are used for their ability to
@@ -18,86 +11,126 @@ process and run scripts using their RAM. It should be noted however, that
 all bought servers are deleted upon augmentation installation.
 So, this list needs to be manually reset after each start of the run.
 
-"all-list.txt" : This will have the names of all servers, regardless of the 
-fact if they have money or RAM in them or not. Except it won't have the names of 
-my own bought servers. This was made so, that because some processes can be used 
-on all servers regardless of the fact if they don't have money or RAM.
-
 "stock-list.txt" : This will have the names of all servers that have an entry in
 the stock market. Growth and hack affect the stock market prices of the servers,
 so it's better to keep them in a separate list for stock market price manipulation.
 You can first empty the banks of these servers and buy their shares, then grow them
 back to the max, and sell the shares, then siphon their bank again.
 
-"stock-record.txt" : This will have the records of various attributes of the
-stock market entries based on date and available money.
-
 ======================================================================================
 
-macroAnalyze.js : 
+macroAnalyze.js and visualPercent.js : 
 
-This script takes a list of server names from the "all-list.txt", and sequentially
+"macroAnalyze.js" takes a list of server names from the "all-list.txt", and sequentially
 prints every listed server's name, whether I have root access or not, current money, 
-max money, current security level, min security level, RAM usage and 
-current money percentage block by block on the terminal. Runs only once.
+max money, current security level, min security level, RAM usage, current money 
+percentage and growth rate block by block on the terminal.
+
+"visualPercent.js" similarly takes a list of server names from the "all-list.txt", but
+only displays a visual representation of the money percentage of the servers line by line.
+The lack of other information means I see more money related information per screen space.
+It also tells whether I have root access to the server or not.
+If "stock" or "stocks" arguments are used together with the script call
+(as in, "run visualPercent.js stock" or "run visualPercent.js stocks"), "stock-list.txt"
+is used for the list of servers instead of "all-list.txt".
 
 ======================================================================================
 
-masterFarm.js , masterGrow.js and masterWeaken.js :
+masterFarm.js , clientFarm.js , masterGrow.js , masterWeaken.js and masterHack.js :
 
 "masterFarm.js" is a script that takes a list of server names from the 
-"combined-list.txt", and sequentially runs a series of grow-weaken on them,
-and uses the "masterGrow.js" and "masterWeaken.js" files in order to concurrently
-execute multiple processes at once on multiple targets. This tremendously speeds up the
-weakening and the growing process of servers, but also takes up the entirety of 
-the RAM usage. "masterFarm.js" runs on an infinite loop, each instance of "masterGrow.js"
-and "masterWeaken.js" are spawned by the "masterFarm.js", and they run only once.
+"all-list.txt", and sequentially runs a series of weaken-grow on them,
+uses the "masterGrow.js" and "masterWeaken.js" files in order to concurrently
+execute multiple processes at once on multiple targets. It also calculates
+the remaining RAM on the the home server, and adjusts each operation's threads 
+accordingly. It also calculates how many threads it would take to minimize security 
+or maximize money, so it doesn't overshoot and waste needless RAM power.
+This tremendously speeds up the process of servers, and uses RAM efficiently. 
+The servers that can't have any money and the servers that have stock market entries
+are spared from the operations. This script is meant to run only at home. The
+reason for that is, because "home" has more cores and that supports the grow and weaken
+effectiveness, and home also has a great RAM to be able to support all servers. 
+So the hacking operation is left only for the other servers. Leaves 100 GB free RAM
+at the very least, so that other operations could be run. If the "stock" argument is
+used, it uses the scripts on the stock servers instead.
 
-The "weakenThreads" and "growThreads" variables inside the "masterFarm.js" could
-be given a greater number in the event that Home RAM becomes so big that the
-processes cannot entirely fill it up until the first ones finish.
+"clientFarm.js" is a script that takes a list of server names from the "all-list.txt",
+and sequentially runs "masterHack.js" on them. It also makes a calculation based on
+the number of servers with a RAM on "all-list.txt" and "myOwnServers.txt", and
+adjusts the threads of "masterHack.js" accordingly. This makes it so that the targets
+aren't completely drained by overhacking, and also manages efficient use of the host
+RAM.
+The servers that can't have any money and the servers that have stock market entries
+are spared from the operations. This script is meant to only run at servers other 
+than home.
+
+"masterFarm.js" and "clientFarm.js" run on an infinite loop, each instance of 
+"masterGrow.js", "masterWeaken.js" and "masterHack.js" run only once.
 
 =======================================================================================
 
 distFarm.js : 
 
-This script takes a list of server names from "distribution-list.txt" and 
-"myOwnServers.txt", then sequentially copies the "combined-list.txt", 
-"masterFarm.js", "masterGrow.js" and "masterWeaken.js" files to every one
-of them from my home, and if the target server has only 8 GB of RAM or less,
-it copies the "combined-list.txt" and "payday.js" instead. Runs only once.
+This script takes a list of server names from "all-list.txt" and 
+"myOwnServers.txt", then sequentially copies the "all-list.txt", "stock-list.txt", 
+"myOwnServers.txt", "clientFarm.js" and "masterHack.js" files to every one of them 
+from my home. If a server has 4 GB or less RAM, they get "all-list.txt", 
+"stock-list.txt" and "lowballHack.js" instead. 
+The RAMless servers are spared from the operation. Runs only once.
 
 =======================================================================================
 
 macroFarmStart.js :
 
 This script takes a list of server names from "all-list.txt" and "myOwnServers.txt",
-and sequentially starts the "masterFarm.js" or "payday.js" in every one of them 
-if the corresponding file exists in the given server, while killing the previous 
-script if it was already running. If it's going to run "payday.js", it calculates the
-maximum number of threads "payday.js" can run on that server, and runs it with the 
-specified number of threads for that server. Runs only once.
+and sequentially starts the "clientFarm.js" in every one of them if the corresponding 
+file exists in the given server, while killing the previous script if it was already 
+running. If a server has "lowballHack.js", runs two instances of that. 
+Runs only once.
 
 =======================================================================================
 
-payday.js : 
+lowballHack.js :
 
-This script takes a list of server names from "combined-list.txt", and hacks each
-one of them if their current money is above a certain percentage of the max money.
+A very lightweight code that is designed to work on servers with 4 GB RAM or less.
+Takes a list of server names from "all-list.txt", and runs a single hack() operation 
+inside the same file, doesn't need an external script. The servers that can't have 
+any money and the servers that have stock market entries are spared from the operations.
 Runs on an infinite loop.
+
+=======================================================================================
+
+hackBurst.js , growBurst.js and weakenBurst.js :
+
+"hackBurst.js" takes a list of servers from "all-list.txt", and executes the 
+"masterHack.js" once on each server with a predetermined, increased number of 
+threads, once. The same goes for "weakenBurst.js" and "growBurst.js" as well.
+The servers that can't have any money and the servers that have stock market 
+entries are spared from the operations. If you use the "stock" argument while
+running the scripts, they will only execute their scripts on the stock servers.
+They run only once.
 
 =======================================================================================
 
 fastStart.js :
 
-This can be used for automatically restarting the "payday.js", "distFarm.js", 
-"macroFarmStart.js" and "masterFarm.js" scripts at home when I kill all the running 
-scripts for any reason. Also checks and terminates if the same scripts were already 
-running before. Runs only once.
+This can be used for automatically restarting the "distFarm.js", "macroFarmStart.js" 
+and "masterFarm.js" scripts at home when I kill all the running scripts for any 
+reason. Also checks and terminates if the same scripts were already running before. 
+Runs only once.
 
 =======================================================================================
 
-stockSiphon.js , stockNurture.js , biggerSiphon.js , biggerNurture.js:
+hacknet-manager.js : 
+
+This script takes a threshold of my current money to be spent on hacknet upgrades, 
+and automatically updates my hacknet network with the most efficient upgrade choice 
+based on the ratio of upgrade cost to income increase. Also purchases new hacknet 
+nodes when available. Runs on an infinite loop.
+
+=======================================================================================
+
+stockSiphon.js , stockNurture.js , stockHack.js , stockGrow.js , stockWeaken.js :
 
 Both scripts take a list of server names from the "stock-list.txt", and 
 puts them inside an array of data structures that hold these servers' attributes.
@@ -110,8 +143,62 @@ money are minimized and security are minimized.
 
 Both run on a limited loop.
 
-"biggerSiphon.js" and "biggerNurture.js" calls their corresponding scripts with more 
-numbers of threads. These run once.
+They need "stockHack.js", "stockGrow.js" and "stockWeaken.js" files that are
+separate from the usual "masterHack.js", "masterGrow.js" and "masterWeaken.js",
+because their own operation scripts have the "stock : true" argument enabled,
+which affects their stock market prices.
+
+======================================================================================
+
+stockAnalyze.js , stockPrint.js and stock-record.txt :
+
+(These scripts can only work after you buy all the access API from the stock exchange)
+
+"stockAnalyze.js" creates a data structure for each entry in the stock market.
+This structure has variables for the stock symbol, stock prices, lowest price,
+highest price, median price, bid price, ask price and forecast for each entry. 
+And at 6 second intervals, the script pulls the current stock values of each entry, 
+while re-evaluting the lowest price, highest price and median price on each loop. 
+This way, the script saves a series of prices for each of the stock entry.
+Runs until stopped.
+
+"stockPrint.js" takes all the data structure objects and the accumulated list of
+prices inside, and prints them inside the "stock-record.txt" neatly, block by block,
+in descending order of median price. Also prints for how long the "stockAnalyze.js"
+script has been running at the end, and terminates the "stockAnalyze.js" script.
+Runs only once. "stock-record.txt" is a file that is for the user's eyes only.
+
+=======================================================================================
+
+stockBuy.js , stockSell.js and stockReceipt.txt :
+
+(These scripts can only work after you buy all the access API from the stock exchange)
+
+Also, it should be taken into account that the "stockAnalyze.js" must have been running for 
+some time, and must be kept running for the duration of these scripts for a healthy outcome.
+
+"stockBuy.js" accepts a stock symbol as the parameter. If the specified stock's server
+money is at 0%, and if the specified stock's buying price is less than or equal to a 
+threshold that is close to the stock's recorded lowest price value, and if the forecast
+is within a certain value, the script buys as many shares as possible of the specified
+stock using the 25% of the "home"s current money. Then it prints the stock symbol,
+amount of shares bought, the money paid, and the date and hour to the "stockReceipt.txt"
+file. Then starts the "stockSell.js" file and terminates itself.
+
+"stockSell.js" accepts the same stock symbol that it's parent "stockBuy.js" process
+has gotten. If the specified stock's server money is at 100%, and if the specified stock's
+selling price is more than or equal to a threshold that is close to the stock's recorded
+highest price value, and if the forecast is within a certain value, the script sells all the
+shares that belonged to the symbol. It also sells all the shares if the selling price of
+the shares fall within a certain threshold of the price that the shares were bought for.
+Then, it prints the stock symbol, the money gotten, and the date and the hour to the
+"stockReceipt.txt" file. Then terminates itself. 
+
+It should be noted that both "stockBuy.js" and "stockSell.js" won't erase the previous
+contents of the receipt file, and that it's possible to run these scripts simultaneously 
+for different servers. And it should be noted that, whenever there is a new entry in the 
+"stock-list.txt", that entry should also be added into the internal list of "stockBuy.js" 
+and "stockSell.js" together with it's stock symbol.
 
 =======================================================================================
 
