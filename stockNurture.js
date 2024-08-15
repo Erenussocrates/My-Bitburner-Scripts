@@ -23,19 +23,19 @@ export async function main(ns) {
         }
     }
 
-    let serverList = [];
+    const serverList = [];
 
     // Read the server names from 'stock-list.txt'
-    let data = ns.read('stock-list.txt');
-    let servers = data.split('\n').map(s => s.trim()).filter(s => s !== '');
+    const data = ns.read('stock-list.txt');
+    const servers = data.split('\n').map(s => s.trim()).filter(s => s !== '');
 
     // Initialize server data structures
-    for (let server of servers) {
+    for (const server of servers) {
         if (ns.hasRootAccess(server)) {
-            let minSecurity = ns.getServerMinSecurityLevel(server);
-            let maxMoney = ns.getServerMaxMoney(server);
-            let currentSecurity = ns.getServerSecurityLevel(server);
-            let currentMoney = ns.getServerMoneyAvailable(server);
+            const minSecurity = ns.getServerMinSecurityLevel(server);
+            const maxMoney = ns.getServerMaxMoney(server);
+            const currentSecurity = ns.getServerSecurityLevel(server);
+            const currentMoney = ns.getServerMoneyAvailable(server);
             serverList.push(new ServerData(server, minSecurity, maxMoney, currentSecurity, currentMoney));
         } else {
             ns.print(`No root access to ${server}, skipping...`);
@@ -44,19 +44,26 @@ export async function main(ns) {
 
     // Main loop
     while (serverList.some(server => server.needsGrow() || server.needsWeaken())) {
-        for (let serverData of serverList) {
+        for (const serverData of serverList) {
             serverData.updateCurrentState(ns);
 
-            if (serverData.needsGrow()) {
-                await ns.grow(serverData.name, { stock: true });
-                await ns.sleep(2000);
+            // Check if there's enough free RAM to run the grow or weaken scripts
+            const freeRAM = ns.getServerMaxRam('home') - ns.getServerUsedRam('home')-100;
+            //const growRAMCost = ns.getScriptRam('stockGrow.js');
+            //const weakenRAMCost = ns.getScriptRam('masterWeaken.js');
+
+            if (serverData.needsGrow() && freeRAM > 0) {
+                ns.run("stockGrow.js", 100, serverData.name);
+                await ns.sleep(1);
             }
 
-            if (serverData.needsWeaken()) {
-                await ns.weaken(serverData.name);
-                await ns.sleep(2000);
+            if (serverData.needsWeaken() && freeRAM > 0) {
+                ns.run("masterWeaken.js", 100, serverData.name);
+                await ns.sleep(1);
             }
         }
+
+        await ns.sleep(100); // Pause before the next loop iteration to avoid overwhelming the system
     }
 
     ns.print("Exiting, no servers need growing or weakening.");
