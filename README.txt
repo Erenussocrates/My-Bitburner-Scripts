@@ -170,7 +170,7 @@ Runs only once. "stock-record.txt" is a file that is for the user's eyes only.
 
 =======================================================================================
 
-stockBuy.js , stockSell.js and stockReceipt.txt :
+stockBuy.js , stockSell.js , manualStockTransaction.js and stockReceipt.txt :
 
 (These scripts can only work after you buy all the access API from the stock exchange)
 
@@ -194,11 +194,21 @@ the shares fall within a certain threshold of the price that the shares were bou
 Then, it prints the stock symbol, the money gotten, and the date and the hour to the
 "stockReceipt.txt" file. Then terminates itself. 
 
-It should be noted that both "stockBuy.js" and "stockSell.js" won't erase the previous
-contents of the receipt file, and that it's possible to run these scripts simultaneously 
-for different servers. And it should be noted that, whenever there is a new entry in the 
-"stock-list.txt", that entry should also be added into the internal list of "stockBuy.js" 
-and "stockSell.js" together with it's stock symbol.
+"manualStockTransaction.js" takes 3 arguments while it's about to be run by the user:
+first the stock symbol, second the buying price, lastly the selling price. If the 
+dynamic buying and selling of the shares at the lowest and highest points don't work as
+intended in above scripts, the user can always analyze a stock for some time using the
+"stockAnalyze.js", find out the lowest and highest points, and then manually enter those
+points as the arguments for this script. Even if the stock control of hacking and
+growing doesn't work, as long as this script is running, a time could come when
+this script will certainly bear fruit. And you can run as many of them for as many
+different symbols as you want in parallel. Runs on a limited loop.
+
+It should be noted that both "stockBuy.js", "stockSell.js" and "manualStockTransaction.js" 
+won't erase the previous contents of the receipt file, and that it's possible to run these 
+scripts simultaneously for different servers. And it should be noted that, whenever there 
+is a new entry in the "stock-list.txt", that entry should also be added into the internal 
+list of "stockBuy.js" and "stockSell.js" together with it's stock symbol.
 
 =======================================================================================
 
