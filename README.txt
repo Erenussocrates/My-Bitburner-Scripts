@@ -460,7 +460,7 @@ This can be used to unlock the only steam achievement that is otherwise impossib
 methods provided by "X5934 078FR1" on steam forums. "client/masterHack.js" is called 
 with varying threads on a random server, after the user's victorious outcome of the minigames.
 You have to type ";" at the end of your input in order to pass the input to the script in both
-games.
+games. Don't run more than one of these at once.
 
 CONTENTS =
 hangman.js , rockPaperScissors.js
