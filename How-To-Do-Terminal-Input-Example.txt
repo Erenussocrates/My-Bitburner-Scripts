@@ -1,0 +1,62 @@
+The code below is an example of how to achieve runtime inputs on the terminal.
+After running the script, if you type "doSomething", as soon as you hit ";",
+terminal will print "Something happened". If you type "exit", as soon as you hit ";",
+terminal will print "Exiting runtime input", and the script will terminate.
+
+This code snippet is courtesy of "X5934 078FR1" on steam forums.
+
+
+"""
+
+/** @param {NS} ns */
+export async function main(ns) {
+
+  var terminalInput;
+  var terminalHandler;
+  var terminalCommand;
+
+  while (1) {
+    terminalInput = eval('document.getElementById( "terminal-input" )');
+    if (terminalInput === null) {
+      await ns.sleep(1000);
+    }
+    else {
+      terminalHandler = Object.keys(terminalInput)[1];
+      if (terminalInput.value.includes(";")) {
+        terminalCommand = terminalInput.value;
+        commandInterpreter();
+      }
+    }
+
+    await ns.sleep(1);
+  }
+
+  function commandInterpreter() {
+    switch (terminalCommand) {
+      case "doSomething;":
+        {
+          ns.tprint("Something happened");
+          break;
+        }
+      case "exit;":
+        {
+          ns.tprint("Exiting runtime input");
+          terminalInput.value = "";
+          terminalInput[terminalHandler].onChange({ target: terminalInput });
+          ns.exit();
+        }
+      default:
+        {
+
+        }
+    }
+
+    terminalInput.value = "";
+    terminalInput[terminalHandler].onChange({ target: terminalInput });
+
+    return;
+  }
+
+}
+
+"""
