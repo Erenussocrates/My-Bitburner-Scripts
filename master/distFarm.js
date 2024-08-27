@@ -27,10 +27,10 @@ export async function main(ns) {
                 ns.print(`No root access to ${server}, skipping...`);
                 continue; // Skip this server if no root access
             }
-        if (ns.getServerMaxRam(server)<=4) {
+        if (ns.getServerMaxRam(server)<=8) {
             await lowball(server);
         }
-        else if(ns.getServerMaxRam(server)>4){
+        else if(ns.getServerMaxRam(server)>8){
           //ns.scp('combined-list.txt', server, 'home');
           await copyfiles(server);
         }
