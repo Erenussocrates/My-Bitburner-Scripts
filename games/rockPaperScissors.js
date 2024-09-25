@@ -10,7 +10,7 @@ export async function main(ns) {
     let computerScore = 0;
     let scoreGoal;
 
-    ns.tprint("Welcome to Rock-Paper-Scissors!");
+    ns.tprint("Welcome to the game of Rock-Paper-Scissors!");
     ns.tprint("Please enter the score goal (a positive integer):");
 
     // Read and validate score goal from terminal input
