@@ -17,6 +17,29 @@ export async function main(ns) {
         "CTYS": "catalyst",
         "RHOC": "rho-construction",
         "APHE": "alpha-ent",
+        "SYSC": "syscore",
+        "LXO": "lexo-corp",
+        "SLRS": "solaris",
+        "NVMD": "nova-med",
+        "GPH": "global-pharm",
+        "AERO": "aerocorp",
+        "UNV": "univ-energy",
+        "ICRS": "icarus",
+        "OMN": "omnia",
+        "DCOMM": "defcomm",
+        "TITN": "titan-labs",
+        "MDYN": "microdyne",
+        "VITA": "vitalife",
+        "STM": "stormtech",
+        "HLS": "helios",
+        "OMTK": "omnitek",
+        "KGI": "kuai-gong",
+        "FSIG": "4sigma",
+        "FLCM": "fulcrumtech",
+        "MGCP": "megacorp",
+        "BLD": "blade",
+        "ECP": "ecorp",
+        "CLRK": "clarkinc",
         // Add other mappings as needed
     };
 
@@ -35,7 +58,7 @@ export async function main(ns) {
     const stockInfo = stockData[stockSymbol];
 
     while (true) {
-        const ratioMoney = ns.getServerMoneyAvailable(serverName) / ns.getServerMaxMoney(serverName);
+        //const ratioMoney = ns.getServerMoneyAvailable(serverName) / ns.getServerMaxMoney(serverName);
         const buyPrice = ns.stock.getPrice(stockSymbol);
         const forecast = ns.stock.getForecast(stockSymbol);
 
@@ -46,17 +69,20 @@ export async function main(ns) {
         const sharesToBuy = Math.floor(maxSpend / buyPrice);
 
         // Check the buying conditions
-        if (ratioMoney <= 0.1 && buyPrice <= buyThreshold && forecast >= 0.55 && sharesToBuy > 0) {
+        if (buyPrice <= buyThreshold && forecast > 0.5 && sharesToBuy > 0) {
             //const boughtShares = ns.stock.buy(stockSymbol, sharesToBuy);
             const boughtShares = ns.stock.buyStock(stockSymbol, sharesToBuy);
+            //Apparently, "buyStock" returns "price per share" and not the number of bought
+            //shares.
+            //So, boughtShares = price per share
 
             if (boughtShares > 0) {
-                const transactionCost = boughtShares * buyPrice;
+                const transactionCost = sharesToBuy * buyPrice;
                 const transactionTime = new Date().toLocaleString();
-                const receiptContent = `Bought ${boughtShares} shares of ${stockSymbol} at $${buyPrice.toFixed(2)} each for a total of $${transactionCost.toFixed(2)} on ${transactionTime}.\n`;
+                const receiptContent = `Bought ${sharesToBuy} shares of ${stockSymbol} at $${buyPrice.toFixed(2)} each for a total of $${transactionCost.toFixed(2)} on ${transactionTime}.\n`;
 
                 await ns.write("stockReceipt.txt", receiptContent, "a");
-                ns.tprint(`Bought ${boughtShares} shares of ${stockSymbol}.`);
+                ns.tprint(`Bought ${sharesToBuy} shares of ${stockSymbol}.`);
 
                 // Call stockSell.js for selling
                 ns.run("stock/stockSell.js", 1, stockSymbol);
