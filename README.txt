@@ -3,6 +3,7 @@
 1) THE TEXT FILES
   README.txt,
   all-list.txt,
+  actual-all-list.txt,
   myOwnServers.txt,
   stock-list.txt,
   detected-list.txt,
@@ -63,9 +64,9 @@
 a folder.
 
 CONTENTS = 
-README.txt , all-list.txt , myOwnServers.txt , stock-list.txt, 
-detected-list.txt , stock-record.txt , stockReceipt.txt , lit-archive.txt,
-How-To-Do-Terminal-Input-Example.txt
+README.txt , all-list.txt , actual-all-list.txt , myOwnServers.txt , 
+stock-list.txt , detected-list.txt , stock-record.txt , stockReceipt.txt , 
+lit-archive.txt , How-To-Do-Terminal-Input-Example.txt
 
 * "README.txt" : 
 This current document that you are reading right now. It holds all
@@ -76,7 +77,12 @@ This will have the names of all servers, regardless of the
 fact if they have money or RAM in them or not. Except it won't have the names of 
 my own bought servers. This was made so, that because some processes can be used 
 on all servers regardless of the fact if they don't have money or RAM.
-You should add the "darkweb" server to the list only after you install the TOR router.
+This list is designed to hold only the servers within the range of "scan-analyze 10",
+so it should be reset on each new gameplay iteration.
+
+* "actual-all-list.txt" :
+This will have the names of all servers, in case if something doesn't exist inside
+both the "all-list.txt" and "detected-list.txt".
 
 * "myOwnServers.txt" : 
 Typically, there are names of servers that I have
