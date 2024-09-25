@@ -8,15 +8,14 @@ export async function main(ns) {
     // If not running, execute the script
     if (!ipvgoRunning) {
         // Determine which opponent to reset the board against
-        const resetAgainstNetburners = Math.random() < 0.8; // 80% chance for Netburners, 20% for Slum Snakes
+const opponents = ["Netburners", "Slum Snakes", "The Black Hand", "Tetrads", "Daedalus", "Illuminati"];
+const randomOpponent = opponents[Math.floor(Math.random() * opponents.length)];
 
-        if (resetAgainstNetburners) {
-            ns.go.resetBoardState("Netburners", 13);
-        } else {
-            ns.go.resetBoardState("Slum Snakes", 13);
-        }
+// Reset the board state with the randomly chosen opponent
+ns.go.resetBoardState(randomOpponent, 13);
 
-        ns.exec('master/ipvgo.js', 'home');
+// Start the new game
+ns.exec('master/ipvgo.js', "home");
     }
 
         /*
