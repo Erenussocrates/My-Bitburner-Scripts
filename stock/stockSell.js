@@ -17,6 +17,29 @@ export async function main(ns) {
         "CTYS": "catalyst",
         "RHOC": "rho-construction",
         "APHE": "alpha-ent",
+        "SYSC": "syscore",
+        "LXO": "lexo-corp",
+        "SLRS": "solaris",
+        "NVMD":"nova-med",
+        "GPH": "global-pharm",
+        "AERO": "aerocorp",
+        "UNV": "univ-energy",
+        "ICRS": "icarus",
+        "OMN": "omnia",
+        "DCOMM": "defcomm",
+        "TITN": "titan-labs",
+        "MDYN": "microdyne",
+        "VITA": "vitalife",
+        "STM": "stormtech",
+        "HLS": "helios",
+        "OMTK": "omnitek",
+        "KGI": "kuai-gong",
+        "FSIG": "4sigma",
+        "FLCM": "fulcrumtech",
+        "MGCP": "megacorp",
+        "BLD": "blade",
+        "ECP": "ecorp",
+        "CLRK": "clarkinc",
         // Add other mappings as needed
     };
 
@@ -35,13 +58,19 @@ export async function main(ns) {
     const stockInfo = stockData[stockSymbol];
     let sellSwitch = false;
     let midThreshold = false;
+    let realMidSwitch = false;
+    let seventyPercentSwitch = false;
+    let realSeventyPercentSwitch = false;
 
-    const sellThreshold = stockInfo.highestPrice * 0.95;
+    const sellThreshold = stockInfo.highestPrice * 0.9;
     const stopLossThreshold = stockInfo.rawPrices[0][0] * 1.1;
     const midPriceThreshold = (stockInfo.rawPrices[0][0] + sellThreshold) / 2;
+    const realMidThreshold = (stockInfo.rawPrices[0][0] + stockInfo.highestPrice) / 2;
+    const seventyPercentThreshold = (stockInfo.rawPrices[0][0] + sellThreshold) * 0.75;
+    const realSeventyPercentThreshold = (stockInfo.rawPrices[0][0] + stockInfo.highestPrice) * 0.75;
 
     while (true) {
-        const ratioMoney = ns.getServerMoneyAvailable(serverName) / ns.getServerMaxMoney(serverName);
+        //const ratioMoney = ns.getServerMoneyAvailable(serverName) / ns.getServerMaxMoney(serverName);
         const sellPrice = ns.stock.getPrice(stockSymbol);
         const forecast = ns.stock.getForecast(stockSymbol);
         const boughtShares = ns.stock.getPosition(stockSymbol)[0];
@@ -56,48 +85,65 @@ export async function main(ns) {
             midThreshold = true;
         }
 
+        if (sellPrice > realMidThreshold) {
+          realMidSwitch = true;
+        }
+
+        if (sellPrice > seventyPercentThreshold) {
+          seventyPercentSwitch = true;
+        }
+
+        if (sellPrice > realSeventyPercentThreshold) {
+          realSeventyPercentSwitch = true;
+        }
+
         // Check the selling conditions
         if (boughtShares > 0) {
-            let receiptNote = "";
+            let receiptNote = " (Optimal Profit)";
 
-            if ((sellSwitch && sellPrice <= stopLossThreshold) ||
-                (ratioMoney > ns.getServerMaxMoney(serverName) * 0.9 &&
-                sellPrice >= sellThreshold &&
-                forecast <= 0.45)) {
+            if ( (sellSwitch && sellPrice <= stopLossThreshold) ||
+                (midThreshold && sellPrice <= midPriceThreshold) ||
+                (realMidSwitch && sellPrice <= realMidThreshold) ||
+                (seventyPercentSwitch && sellPrice <= seventyPercentThreshold) ||
+                (realSeventyPercentSwitch && sellPrice <= realSeventyPercentThreshold) ||
+                (sellPrice >= sellThreshold &&
+                forecast <= 0.5) ) {
 
                 if (sellSwitch && sellPrice <= stopLossThreshold) {
                     receiptNote = " (Loss Mitigation)";
                 }
+                else if (midThreshold && sellPrice <= midPriceThreshold) {
+                  receiptNote = " (45%-Point Mitigation)";
+                }
+                else if (realMidSwitch && sellPrice <= realMidThreshold) {
+                  receiptNote = " (Mid-Point Mitigation)";
+                }
+                else if (seventyPercentSwitch && sellPrice <= seventyPercentThreshold) {
+                  receiptNote = " (67%-Point Mitigation)";
+                }
+                else if (realSeventyPercentSwitch && sellPrice <= realSeventyPercentThreshold) {
+                  receiptNote = " (75%-Point Mitigation)";
+                }
 
                 const soldShares = ns.stock.sellStock(stockSymbol, boughtShares);
-
+                //"sellStock" returns the "price per share" and not the number of shares
+                //sold.
+                //So, soldShares = price per share
+ 
                 if (soldShares > 0) {
-                    const transactionRevenue = soldShares * sellPrice;
+                    const transactionRevenue = boughtShares * sellPrice;
                     const transactionTime = new Date().toLocaleString();
-                    const receiptContent = `Sold ${soldShares} shares of ${stockSymbol} at $${sellPrice.toFixed(2)} each for a total of $${transactionRevenue.toFixed(2)} on ${transactionTime}${receiptNote}.\n`;
+                    const receiptContent = `Sold ${boughtShares} shares of ${stockSymbol} at $${sellPrice.toFixed(2)} each for a total of $${transactionRevenue.toFixed(2)} on ${transactionTime}${receiptNote}.\n`;
 
                     await ns.write("stockReceipt.txt", receiptContent, "a");
-                    ns.tprint(`Sold ${soldShares} shares of ${stockSymbol}${receiptNote}.`);
+                    ns.tprint(`Sold ${boughtShares} shares of ${stockSymbol}${receiptNote}.`);
                     return; // Exit after selling
                 } else {
                     ns.print(`Failed to sell shares of ${stockSymbol}.`);
                 }
             }
 
-            // Sell shares if midThreshold switch is true and price drops below midPriceThreshold
-            else if (midThreshold && sellPrice <= midPriceThreshold) {
-                const soldShares = ns.stock.sellStock(stockSymbol, boughtShares);
-
-                if (soldShares > 0) {
-                    const transactionRevenue = soldShares * sellPrice;
-                    const transactionTime = new Date().toLocaleString();
-                    const receiptContent = `Sold ${soldShares} shares of ${stockSymbol} at $${sellPrice.toFixed(2)} each for a total of $${transactionRevenue.toFixed(2)} on ${transactionTime} (Mid-Threshold Trigger).\n`;
-
-                    await ns.write("stockReceipt.txt", receiptContent, "a");
-                    ns.tprint(`Sold ${soldShares} shares of ${stockSymbol} (Mid-Threshold Trigger).`);
-                    return; // Exit after selling
-                }
-            } else {
+            else {
                 ns.print(`Conditions not met for selling ${stockSymbol}. Waiting...`);
             }
         } else {
