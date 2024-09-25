@@ -29,7 +29,7 @@ export async function main(ns) {
         // Combine all servers and my own servers into one list for counting
         let combinedServers = [...new Set([...allServers, ...myOwnServers])];
         // Count servers with more than 4 GB of RAM
-        let serverCount = combinedServers.filter(s => ns.getServerMaxRam(s) > 4).length;
+        let serverCount = combinedServers.filter(s => ns.getServerMaxRam(s) > 8).length;
 
         // Calculate hack fraction
         const hackFraction = 0.25 / Math.max(1, serverCount); // Avoid division by zero
