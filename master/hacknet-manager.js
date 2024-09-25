@@ -1,7 +1,7 @@
 /** @param {NS} ns */
 export async function main(ns) {
-    const upgradeThreshold = 0.9; // Fraction of your money to use for upgrades
-    //Basically means I'll only use 10% of my money to upgrade
+    const upgradeThreshold = 0.01; // Fraction of your money to use for upgrades
+    //Basically means I'll use 99% of my money to upgrade
 
     // Calculate the initial buffer amount
     const initialMoney = ns.getServerMoneyAvailable("home");
