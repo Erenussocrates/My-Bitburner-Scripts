@@ -1,12 +1,14 @@
--------TABLE OF CONTENTS-------
+--------TABLE OF CONTENTS--------
 
 1) THE TEXT FILES
   README.txt,
   all-list.txt,
   myOwnServers.txt,
   stock-list.txt,
+  detected-list.txt,
   stock-record.txt,
   stockReceipt.txt,
+  lit-archive.txt,
   How-To-Do-Terminal-Input-Example.txt,
 2) master/
   RAMcontroller.js,
@@ -18,7 +20,6 @@
   hackBurst.js, growBurst.js and weakenBurst.js,
   hacknet-manager.js,
   ipvgo.js,
-  stockSiphon-signal.js,
   singularityStart.js,
 3) client/
   clientController.js,
@@ -32,21 +33,27 @@
   stockPrint.js,
   stockBuy.js,
   stockSell.js,
+  stockBuyAll.js,
   manualStockTransaction.js,
   stockNurture.js,
   stockGrow.js,
+  stockSiphon-signal.js,
 5) utils/
-  macroAnalyze.js,
+  macAnalyze.js,
   visualPercent.js,
   animatedPercent.js,
   scriptCounter.js,
-  myKarma.js,
+  omniscient-scan.js,
+  myHidden.js,
   intro.js,
   unachievable.js,
-6) games/
+6) casino/
+  coin-flip.js,
+7) games/
   hangman.js,
   rockPaperScissors.js,
-7) coding-contracts/
+  battleship.js,
+8) coding-contracts/
 
 ======================================================================================
 
@@ -56,8 +63,9 @@
 a folder.
 
 CONTENTS = 
-all-list.txt , myOwnServers.txt , stock-list.txt, stock-record.txt , 
-stockReceipt.txt , How-To-Do-Terminal-Input-Example.txt
+README.txt , all-list.txt , myOwnServers.txt , stock-list.txt, 
+detected-list.txt , stock-record.txt , stockReceipt.txt , lit-archive.txt,
+How-To-Do-Terminal-Input-Example.txt
 
 * "README.txt" : 
 This current document that you are reading right now. It holds all
@@ -68,6 +76,7 @@ This will have the names of all servers, regardless of the
 fact if they have money or RAM in them or not. Except it won't have the names of 
 my own bought servers. This was made so, that because some processes can be used 
 on all servers regardless of the fact if they don't have money or RAM.
+You should add the "darkweb" server to the list only after you install the TOR router.
 
 * "myOwnServers.txt" : 
 Typically, there are names of servers that I have
@@ -82,6 +91,11 @@ the stock market. Growth and hack affect the stock market prices of the servers,
 so it's better to keep them in a separate list for stock market price manipulation.
 You can first empty the banks of these servers and buy their shares, then grow them
 back to the max, and sell the shares, then siphon their bank again.
+
+* "detected-list.txt" :
+This is a text file associated with "utils/omniscient-scan.js". The aforementioned
+script scans and records every server that isn't already recorded in the 
+"all-list.txt" file, to this text file.
 
 * "stock-record.txt" : 
 The information recorded by "stock/stockAnalyze.js" is 
@@ -99,6 +113,9 @@ It should be noted that both "stock/stockBuy.js", "stock/stockSell.js" and
 "stock/manualStockTransaction.js" won't erase the previous contents of the receipt file, 
 and that it's possible to run these scripts simultaneously for different servers.
 
+* "lit-archive.txt" :
+It's an archive of all the ".lit" files that I've found throughout the servers so far.
+
 * "How-To-Do-Terminal-Input-Example.txt" : 
 It keeps an example script of how to create a script that takes runtime user inputs
 from the terminal while executing the script. It also provides explanations. 
@@ -115,7 +132,7 @@ CONTENTS =
 RAMcontroller.js , distFarm.js , fastStart.js , growBurst.js , 
 hackBurst.js , hacknet-manager.js , ipvgo.js , macroFarmStart.js ,
 masterFarm.js , masterGrow.js , masterWeaken.js , singularityStart, js ,
-stockSiphon-signal.js , weakenBurst.js 
+weakenBurst.js 
 
 * "RAMcontroller.js" :
 Takes the count of servers that we have root access, and that can have money from 
@@ -188,7 +205,8 @@ respective scripts.
 The servers that can't have any money and the servers that have stock market 
 entries are spared from the operations. 
 If you use the "stock" argument while running the scripts, they will only execute 
-their scripts on the stock servers.
+their scripts on the stock servers. This can be used to increase or decrease
+stock server money without impacting their stock prices.
 They run only once.
 
 * "hacknet-manager.js" : 
@@ -201,18 +219,13 @@ Runs on an infinite loop.
 * "ipvgo.js" :
 This script contains an algorithm that automates the IPvGO minigame. It's general
 strategy involves in dividing the board into quarters, applying divide and conquer
-tactics on the opponents, and leveraging the opponent's misplays. 
-It automatically restarts a game against either Netburners or Slum Snakes when the 
+tactics on the opponents, leveraging the opponent's misplays, and guaranteeing survival
+in early game for a minimal amount of captured nodes in the case of defeat. 
+It automatically restarts a game against one of the available factions when the 
 game ends. 
 "RAMcontroller.js" makes sure that always one instance of this script is always running 
 in the background. 
 Runs on an infinite loop.
-
-* "stockSiphon-signal.js" :
-This script takes a list of names from the "all-list.txt", and sends a signal for
-every server that we have a root access to start their "client/stockSiphon.js"
-scripts. To be used when we decide that it's time to lower the stock prices.
-Runs only once.
 
 * "singularityStart.js" :
 (This script can only work after you obtain the Singularity API, which is available
@@ -285,7 +298,7 @@ an array of data structures that hold these servers' attributes. If it is runnin
 takes a pre-allocated amount of RAM from "clientController.js" to use in it's script based
 on the number of available stock servers. "stockSiphon.js" does hack operations on these 
 servers by calling instances of "stockHack.js" until their server money are minimized.
-It takes a signal from "master/stockSiphon-signal.js" to start.
+It takes a signal from "stock/stockSiphon-signal.js" to start.
 Runs on a limited loop.
 
 * "stockHack.js" :
@@ -302,11 +315,14 @@ Each instance runs only once.
 
 - These scripts are typically related to stock market operations, and they are meant
 to be run at "home". 
+Also thanks to "X5934 078FR1" on steam forums for helping me fix the issues with 
+"stockReceipt.txt" and "manualStockTransaction.js".
 (Most of these scripts can only work after you buy all the API access from the stock exchange)
 
 CONTENTS =
-manualStockTransaction.js , stockAnalyze.js , stockBuy.js , stockGrow.js , 
-stockNurture.js , stockPrint.js , stockSell.js 
+manualStockTransaction.js , stockAnalyze.js , stockBuy.js , stockBuyAll.js, 
+stockGrow.js , stockNurture.js , stockPrint.js , stockSell.js , 
+stockSiphon-signal.js
 
 * "stockAnalyze.js" : 
 It creates a data structure for each entry in the stock market. This structure has 
@@ -357,8 +373,8 @@ and if the specified stock's selling price is more than or equal to a threshold 
 is close to the stock's recorded highest price value, and if the forecast is within a 
 certain value, the script sells all the shares that belonged to the symbol. 
 It can also automatically sell all the shares if the selling price of the shares fall 
-within a certain threshold of the price that the shares were bought, for the loss and 
-mid mitigations.
+within a certain threshold of the price that the shares were bought for, for mitigations 
+at various levels.
 Then, it prints the stock symbol, the money gotten, and the date and the hour to the
 "stockReceipt.txt" file, and terminates itself. 
 It should be noted that, if your stock list is yet incomplete, when you add a new
@@ -368,6 +384,13 @@ It should be noted that both "stockBuy.js", "stockSell.js" and "manualStockTrans
 won't erase the previous contents of the receipt file, and that it's possible to run these 
 scripts simultaneously for different servers.
 Runs on a limited loop.
+
+* "stockBuyAll.js" :
+(It should be noted that the "stockAnalyze.js" must have been running for some time, 
+and must be kept running for the duration of this script for a healthy outcome)
+It calls the "stockBuy.js" process for every existing stock symbol once, and then
+terminates itself.
+Runs only once.
 
 * "manualStockTransaction.js" : 
 It takes 3 arguments while it's about to be run by the user:
@@ -380,9 +403,12 @@ Even if the stock market control of hacking and growing doesn't work,
 as long as this script is running, a time could come when this script will certainly 
 bear fruit. And you can run as many of them for as many different symbols as you want in parallel.
 It can also automatically sell all the shares if the selling price of the shares fall 
-within a certain threshold of the price that the shares were bought, for the loss and 
-mid mitigations.
+within a certain threshold of the price that the shares were bought for, for mitigations 
+at various levels.
 This script won't take "forecast" into account either. 
+You can also enter "sellonly" as the second argument instead of the buying price,
+in which case, the script will bypass the buying phase and go straight into selling
+phase.
 It should be noted that both "stockBuy.js", "stockSell.js" and "manualStockTransaction.js" 
 won't erase the previous contents of the receipt file, and that it's possible to run these 
 scripts simultaneously for different servers.
@@ -390,7 +416,7 @@ Runs on a limited loop.
 
 * "stockNurture.js" :
 It takes a list of server names from the "stock-list.txt", and puts them inside an array 
-of data structures that hold these servers' attributes. If it's running, it also take a 
+of data structures that hold these servers' attributes. If it's running, it also takes a 
 pre-allocated amount of RAM from "RAMcontroller.js" to use in it's script, based on the 
 available number of stock servers. "stockNurture.js" does grow operations on these servers 
 using instances of "stockGrow.js" until their server money are maximized.
@@ -404,46 +430,71 @@ the "stock : true" argument enabled, which affects stock market prices of the af
 servers.
 Each instance runs only once.
 
+* "stockSiphon-signal.js" :
+This script takes a list of names from the "all-list.txt", and sends a signal for
+every server that we have a root access to start their "client/stockSiphon.js"
+scripts. It's to be used when we decide that it's time to lower the stock prices.
+Runs only once.
+
 ======================================================================================
 
 5) utils/
 
-- These are typically utility-based scripts that makes the life easier for the user,
-and they are meant to be used at "home".
+- These are typically utility-based scripts that don't involve hacking or alternative
+ways of income, but makes the life easier for the user, and they are meant to be used at 
+"home".
 
 CONTENTS =
-macroAnalyze.js , visualPercent.js , animatedPercent.js , scriptCounter.js , 
-myKarma.js , intro.js , unachievable.js
+macAnalyze.js , visualPercent.js , animatedPercent.js , scriptCounter.js , 
+omniscient-scan.js , myHidden.js , intro.js , unachievable.js
 
-* "macroAnalyze.js" : 
+* "macAnalyze.js" : 
 It takes a list of server names from the "all-list.txt", and sequentially
 prints every listed server's name, whether I have root access or not, current money, 
 max money, current security level, min security level, RAM usage, current money 
-percentage and growth rate block by block on the terminal.
+percentage and growth rate on 3 columns, block by block on the terminal.
 Runs only once.
 
 * "visualPercent.js" : 
 Similarly to the "macroAnalyze.js", it takes a list of server names from the "all-list.txt", 
 but only displays a visual representation of the money percentage of the servers line by line.
 The lack of other information means I see more money related information per screen space.
-It also tells whether I have root access to the server or not.
+It also tells whether I have root access to the server or not, and whether a server is a 
+stock server or not.
 If "stock" or "stocks" arguments are used together with the script call
 (as in, "run visualPercent.js stock" or "run visualPercent.js stocks"), "stock-list.txt"
 is used for the list of servers instead of "all-list.txt".
+If the "compressed" argument is used, the servers are listed on the terminal screen on
+two separate columns and the root access and stock information are left out.
 Runs only once.
 
 * "animatedPercent.js" :
-It is a script that clears the terminal window and calls the "visualPercent.js" script 
-on certain intervals over and over again to simulate a continuous visual animation of 
-the ongoing server money levels. Take note that you can't use the terminal window for 
-anything else while this script is ongoing. 
+It is a script that clears the terminal window and calls the "visualPercent.js" script
+on "compressed" mode, on certain intervals over and over again to simulate a continuous 
+visual animation of the ongoing server money levels. Take note that you can't use the 
+terminal window for anything else while this script is ongoing. 
 Runs until it's manually terminated with "kill animatedPercent.js".
 
 * "scriptCounter.js" : 
 It displays the number of running processes on terminal for each script and each argument.
+Runs only once.
 
-* "myKarma.js" : 
-It displays the hidden stat that is "karma" on the terminal.
+* "omniscient-scan.js" :
+It takes a list of server names from "all-list.txt", and then sequentially runs
+"scan-analyze" on each one of them with a depth of 5. If there are any new encountered
+servers that aren't in the "all-list.txt", the script records the server's name, 
+required hacking skill to hack the server, required number of open ports to run NUKE,
+and it's adjacent server, on the "detected-list.txt" file. 
+After all the servers in "all-list.txt" are accounted for, it loops on the servers 
+recorded inside "detected-list.txt" so far, to ensure there are no undiscovered servers 
+out of reach.
+It also doesn't require any "Deepscan" programs to successfully work.
+It's designed to eliminate the possibility of missing out any servers while running
+"scan-analyze" manually. It effectively discovers everything.
+Runs on a limited loop.
+
+* "myHidden.js" : 
+It displays the hidden stats like "karma" and "intelligence" on the terminal.
 
 * "intro.js" :
 This script is called at the beginning by "master/fastStart.js" and it prints a bunch of
@@ -454,7 +505,27 @@ This can be used to unlock the only steam achievement that is otherwise impossib
 
 ======================================================================================
 
-6) games/
+6) casino/
+
+- These are scripts that make predictions on the outcomes of the casino games in the Aevum
+area, as they are not governed by true RNG.
+
+CONTENTS = 
+coin-flip.js
+
+* "coin-flip.js" :
+The coin flip game in the casino uses the current date clock to make a bunch of
+arithmetic operations in order to calculate the outcome of the coin flip games.
+We use the same formula in this script to try and predict the outcomes. The 
+script calls a tail window as soon as it's run in order to help player keep track 
+of the predictions while on the betting screen. It also provides for how long more
+the current prediction will be maintained. Kinda doesn't work with 100% accuracy
+yet. The outcome of the casino game still depends on the player's manual input.
+Runs until it's manually stopped by "kill casino/coin-flip.js".
+
+======================================================================================
+
+7) games/
 
 - These are scripts that start a minigame on the terminal. They all typically use 
 methods provided by "X5934 078FR1" on steam forums. "client/masterHack.js" is called 
@@ -463,10 +534,10 @@ You have to type ";" at the end of your input in order to pass the input to the 
 games. Don't run more than one of these at once.
 
 CONTENTS =
-hangman.js , rockPaperScissors.js
+hangman.js , rockPaperScissors.js , battleship.js
 
 * "hangman.js" :
-It's a hangman game where the player has 5 attemps. If the player ends up winning, 
+It's a game of hangman where the player has 5 attemps. If the player ends up winning, 
 they will hack a random server with the number of letters of the guessed word as the threads. 
 There are more than a thousand words in the pool.
 You have to type a character, and then type ";" in the terminal to make your guess. 
@@ -474,7 +545,7 @@ For example, if you want to guess the "e" letter, you have to type "e;" in the t
 and as soon as you typed ";", your input will be passed to the script to be evaluated.
 
 * "rockPaperScissors.js" :
-It's a rock, paper, scissors game, where the player specifies the goal score at the beginning.
+It's a game of rock, paper, scissors; where the player specifies the goal score at the beginning.
 If the player ends up winning, they will hack a random server with the goal score as the
 number of threads.
 At the start of the game, you will have to input the goal score. If you type "5;", the
@@ -482,9 +553,28 @@ first player who gets to 5 points will win. When the game begins, you have to ch
 a move. If you want to do scissors, you have to either type "scissors;" or "s;" for
 your input to be accepted as scissors. "paper;" or "p;" for paper, "rock;" or "r;" for rock.
 
+* "battleship.js" :
+It's a game of battleship where the player places down their ships on the board. If the
+player ends up winning, they will hack a random server with the number of threads as the
+player's surviving number of ship tiles.
+The script prints a 15x10 board for both the player and the opponent. The board's columns
+are enumerated by letters, and the rows are enumerated by numbers. The player then
+starts placing their own ships on the player's board. The placement is done via terminal
+input; where the player must enter the "direction", "column letter" and "row number" of the 
+ship's center point. (for example: "horizontal E 02;" , or "vertical C 10;")
+Both players have to place one ship of 5-tile length and three ships of 3-tile length on 
+their own board. After the player is done placing their ships, the computer opponent places 
+it's ships on their own board as well, but the opponent's ships are hidden from the player
+until the player manages to hit one of the ships' tiles.
+Then, the gameplay begins. In order to choose a coordinate to attack, the player must
+similarly enter the "column letter" and "row number" on the terminal, and place a
+semicolon ";" at the end. (for example: "F 06;")
+The computer opponent also chooses random spots, and if it hits one of the ships of the
+player, tries to aim for the nearby tiles.
+
 ======================================================================================
 
-7) coding-contracts/
+8) coding-contracts/
 
 - The folder is pretty self-explanatory, you can inspect the .js files inside which 
 has the contract problems also described in it, together with the codes that solved them.
