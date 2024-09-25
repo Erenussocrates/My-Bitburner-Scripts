@@ -6,6 +6,7 @@ export async function main(ns) {
         "about",
         "accelerate",
         "acceleration",
+        "accept",
         "access",
         "account",
         "acid",
@@ -42,6 +43,8 @@ export async function main(ns) {
         "any",
         "apparatus",
         "apple",
+        "application",
+        "apply",
         "approval",
         "arch",
         "argument",
@@ -76,6 +79,7 @@ export async function main(ns) {
         "basin",
         "basket",
         "bath",
+        "battle",
         "beam",
         "beauty",
         "beautiful",
@@ -206,6 +210,7 @@ export async function main(ns) {
         "computer",
         "condition",
         "confirm",
+        "confirmation",
         "connect",
         "connection",
         "conquer",
@@ -257,6 +262,7 @@ export async function main(ns) {
         "death",
         "debt",
         "decision",
+        "decline",
         "decrease",
         "decryption",
         "deep",
@@ -268,6 +274,7 @@ export async function main(ns) {
         "degree",
         "delicate",
         "demon",
+        "denial",
         "deny",
         "depend",
         "dependent",
@@ -378,6 +385,8 @@ export async function main(ns) {
         "eye",
         "face",
         "fact",
+        "factor",
+        "factory",
         "fall",
         "false",
         "fame",
@@ -409,6 +418,7 @@ export async function main(ns) {
         "fix",
         "flag",
         "flame",
+        "flamingo",
         "flat",
         "flesh",
         "flight",
@@ -537,6 +547,7 @@ export async function main(ns) {
         "intelligence",
         "intelligent",
         "interest",
+        "interface",
         "internet",
         "invent",
         "invention",
@@ -544,6 +555,8 @@ export async function main(ns) {
         "invite",
         "iron",
         "island",
+        "iterate",
+        "iteration",
         "jelly",
         "jewel",
         "job",
@@ -567,6 +580,7 @@ export async function main(ns) {
         "language",
         "last",
         "late",
+        "latex",
         "laugh",
         "law",
         "lead",
@@ -631,6 +645,8 @@ export async function main(ns) {
         "measure",
         "meat",
         "mechanical",
+        "medal",
+        "medic",
         "medical",
         "meet",
         "meeting",
@@ -640,6 +656,7 @@ export async function main(ns) {
         "middle",
         "military",
         "milk",
+        "mill",
         "mind",
         "mine",
         "minimum",
@@ -754,6 +771,7 @@ export async function main(ns) {
         "perception",
         "person",
         "personal",
+        "petroleum",
         "pharmacy",
         "phase",
         "physical",
@@ -768,6 +786,7 @@ export async function main(ns) {
         "planet",
         "plant",
         "plasma",
+        "plastic",
         "plate",
         "play",
         "plead",
@@ -787,6 +806,7 @@ export async function main(ns) {
         "pool",
         "poor",
         "port",
+        "portal",
         "porter",
         "position",
         "possible",
@@ -834,6 +854,7 @@ export async function main(ns) {
         "radiation",
         "radical",
         "radio",
+        "radium",
         "rage",
         "rail",
         "rain",
@@ -1048,6 +1069,7 @@ export async function main(ns) {
         "sword",
         "synchronize",
         "synchronous",
+        "syntax",
         "system",
         "table",
         "tail",
@@ -1112,8 +1134,11 @@ export async function main(ns) {
         "unit",
         "universe",
         "up",
+        "uranium",
         "urban",
         "use",
+        "user",
+        "utility",
         "value",
         "variable",
         "variation",
@@ -1196,7 +1221,7 @@ export async function main(ns) {
         "young",
     ];
 
-    const maxTries = 5;
+const maxTries = 5;
     let remainingTries = maxTries;
 
     // Randomly select a word from the list
@@ -1209,7 +1234,7 @@ export async function main(ns) {
     let terminalInput;
     let terminalHandler;
 
-    ns.tprint(`Welcome to Hangman!`);
+    ns.tprint(`Welcome to the game of Hangman!`);
     ns.tprint(`The word to guess: ${hiddenWord}`);
     ns.tprint(`You have ${remainingTries} tries remaining.`);
 
@@ -1239,8 +1264,10 @@ export async function main(ns) {
                 wrongLetters.push(guessedChar);
                 remainingTries--;
                 ns.tprint(`Incorrect!`);
-                ns.tprint(`Wrong letters: ${wrongLetters.join(", ")}`);
             }
+
+            // Always display wrong letters, even after correct guesses or repeated guesses
+            ns.tprint(`Wrong letters: ${wrongLetters.join(", ") || "None"}`);
 
             ns.tprint(`The word: ${hiddenWord}`);
             ns.tprint(`You have ${remainingTries} tries remaining.`);
