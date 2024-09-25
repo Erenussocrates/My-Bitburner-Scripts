@@ -21,7 +21,7 @@ export async function main(ns) {
                 ns.print(`${server} is in the stock list, skipping...`);
                 continue; // Skip this server if it's in the stockServers list
         }
-        if (ns.getServerMaxMoney(server) > 0) {
+        if (ns.getServerMaxMoney(server) > 0 && ns.getServerMoneyAvailable(server) > ns.getServerMaxMoney(server)*0.5) {
           ns.print(`Running hack on ${server}`);
           await ns.hack(server);
         } else {
