@@ -26,6 +26,11 @@ export async function main(ns) {
         const moneyNeeded = maxMoney - currentMoney;
 
         if (currentMoney < maxMoney) {
+          if (server === "n00dles") {
+            ns.run(growScript, 1, server);
+            await ns.sleep(sleepTime);
+          }
+          else {
             const growthMultiplier = 1 / (1 - growthRate);
             const requiredMultiplier = maxMoney / currentMoney;
             const growThreadsNeeded = Math.ceil(Math.log(requiredMultiplier) / Math.log(growthMultiplier));
@@ -36,6 +41,7 @@ export async function main(ns) {
                 await ns.sleep(sleepTime);
                 ns.print(`Server: ${server}, Money Needed: ${ns.formatNumber(Number(moneyNeeded), 3)}, Grow Threads: ${growThreads}`);
             }
+          }
         }
     }
 
