@@ -23,7 +23,7 @@ function generateCompressedVisual(ns, server) {
 
 export async function main(ns) {
     // Determine which file to use based on the argument
-    let serverListFile = 'all-list.txt';
+    let serverListFile = 'actual-all-list.txt';
     const isStockMode = ns.args.includes('stock') || ns.args.includes('stocks');
     const isCompressed = ns.args.includes('compressed');
 
