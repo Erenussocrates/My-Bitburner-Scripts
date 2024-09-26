@@ -455,14 +455,14 @@ macAnalyze.js , visualPercent.js , animatedPercent.js , scriptCounter.js ,
 omniscient-scan.js , myHidden.js , intro.js , unachievable.js
 
 * "macAnalyze.js" : 
-It takes a list of server names from the "all-list.txt", and sequentially
+It takes a list of server names from the "actual-all-list.txt", and sequentially
 prints every listed server's name, whether I have root access or not, current money, 
 max money, current security level, min security level, RAM usage, current money 
 percentage and growth rate on 3 columns, block by block on the terminal.
 Runs only once.
 
 * "visualPercent.js" : 
-Similarly to the "macroAnalyze.js", it takes a list of server names from the "all-list.txt", 
+Similarly to the "macroAnalyze.js", it takes a list of server names from the "actual-all-list.txt", 
 but only displays a visual representation of the money percentage of the servers line by line.
 The lack of other information means I see more money related information per screen space.
 It also tells whether I have root access to the server or not, and whether a server is a 
