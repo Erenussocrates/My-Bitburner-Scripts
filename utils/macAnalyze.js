@@ -1,7 +1,7 @@
 /** @param {NS} ns */
 export async function main(ns) {
     // Read the list of servers from all-list.txt
-    let data = ns.read('all-list.txt');
+    let data = ns.read('actual-all-list.txt');
     let servers = data.split('\n').map(s => s.trim()).filter(s => s !== '');
 
     // Define the maximum length for alignment based on the longest string (the horizontal separator)
